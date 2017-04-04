@@ -1,4 +1,3 @@
 # pkf-splunk
 
-TODO: Enter the cookbook description here.
-
+v0.3.0 Initial functioning cookbook

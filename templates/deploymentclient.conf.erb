@@ -1,0 +1,5 @@
+[deployment-client]
+clientName = <%= node['hostname'] %>
+
+[target-broker:deploymentServer]
+targetUri=<%= node['splunk']['deploymentserver'] %>

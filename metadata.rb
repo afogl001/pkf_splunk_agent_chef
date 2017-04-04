@@ -1,10 +1,12 @@
 name 'pkf-splunk'
-maintainer 'The Authors'
-maintainer_email 'you@example.com'
-license 'all_rights'
-description 'Installs/Configures pkf-splunk'
-long_description 'Installs/Configures pkf-splunk'
-version '0.1.0'
+maintainer 'Andrew Foglesong'
+maintainer_email 'aafogles@members.fsf.org'
+license 'GPLv3'
+description 'Installs/Configures Splunk Universal Forwarder'
+long_description 'Installs/Configures Splunk Universal Forwarder'
+version '0.3.0'
+
+#0.2.0 Enviornment and host setup, but not attributes used yet
 
 # If you upload to Supermarket you should set this so your cookbook
 # gets a `View Issues` link
