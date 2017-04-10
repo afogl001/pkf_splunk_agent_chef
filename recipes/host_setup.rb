@@ -42,6 +42,11 @@ systemd_unit 'disable_thp.service' do
 end
 
 #Configure ulimits for Splunk service account
-template "/etc/security/limits.d/#{node['splunk']['user']}.conf" do
-  source 'ulimits.erb'
+limits_config "#{node['splunk']['user']}" do
+  limits [
+    { domain: "#{node['splunk']['user']}", type: 'hard', item: 'nproc', value: 16000 },
+    { domain: "#{node['splunk']['user']}", type: 'hard', item: 'sigpending', value: 16000 },
+    { domain: "#{node['splunk']['user']}", type: 'soft', item: 'sigpending', value: 16000 },
+    { domain: "#{node['splunk']['user']}", type: 'hard', item: 'nofile', value: 64000 },
+  ]
 end
