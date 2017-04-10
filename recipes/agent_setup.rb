@@ -40,14 +40,21 @@ template "#{node['splunk']['directory']}/splunkforwarder/etc/splunk-launch.conf"
   mode '0750'
 end
 
-##Initizlize Splunk
-#execute 'SplunkStart' do
-#  command 'splunkforwarder/bin/splunk start --accept-license'
-#  cwd node['splunk']['directory']
-#  user "#{node['splunk']['user']}"
-#  notifies :delete, "remote_file[#{node['splunk']['directory']}/#{node['splunk']['installable']}]", :immediate
-#  action :run
-#end
+#Initizlize Splunk
+execute 'SplunkStart' do
+  command 'splunkforwarder/bin/splunk start --accept-license'
+  cwd node['splunk']['directory']
+  user "#{node['splunk']['user']}"
+  notifies :delete, "remote_file[#{node['splunk']['directory']}/#{node['splunk']['installable']}]", :immediate
+  action :run
+end
+
+#Configure Splunk to start on boot
+execute 'SplunkBoot' do
+  command 'splunkforwarder/bin/splunk enable boot-start'
+  cwd node['splunk']['directory']
+  action :run
+end
 
 #Configure Splunk to start on boot w/ systemd
 systemd_unit 'splunk.service' do
