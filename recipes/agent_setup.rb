@@ -19,9 +19,22 @@ execute 'Untar' do
   not_if { File.exists?("#{node['splunk']['directory']}/splunkforwarder/bin/splunk") }
 end
 
+#Remove Splunk installable
+remote_file "#{node['splunk']['directory']}/#{node['splunk']['installable']}" do
+  action :delete
+end
+
 #Configure Splunk Deployment Server
 template "#{node['splunk']['directory']}/splunkforwarder/etc/system/local/deploymentclient.conf" do
   source 'deploymentclient.conf.erb'
+  owner "#{node['splunk']['user']}"
+  group "#{node['splunk']['group']}"
+  mode '0750'
+end
+
+#Configure Splunk to launch with FIPS, service account, and ignore SELinux
+template "#{node['splunk']['directory']}/splunkforwarder/etc/splunk-launch.conf" do
+  source 'splunk-launch.conf.erb'
   owner "#{node['splunk']['user']}"
   group "#{node['splunk']['group']}"
   mode '0750'
@@ -53,6 +66,5 @@ systemd_unit 'splunk.service' do
   [Install]
   WantedBy=multi-user.target
   EOU
-  notifies :delete, "remote_file[#{node['splunk']['directory']}/#{node['splunk']['installable']}]", :immediate
   action [ :create, :enable, :start ]
 end

@@ -11,6 +11,13 @@ describe processes 'splunkd' do
   its('users') { should eq ['splunk0+'] }
 end
 
+#Check if splunk-launch is configured
+describe file '/agents/splunkforwarder/etc/splunk-launch.conf' do
+  its('content') { should match 'SPLUNK_OS_USER = ' }
+  its('content') { should match 'SPLUNK_IGNORE_SELINUX = ' }
+  its('content') { should match 'SPLUNK_FIPS = ' }
+end
+
 #Ensure setupfiles are removed
 describe file '/agents/splunkforwarder_6-5-2.tgz' do
   it { should_not exist }
