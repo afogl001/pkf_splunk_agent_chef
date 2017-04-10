@@ -55,23 +55,3 @@ execute 'SplunkBoot' do
   cwd node['splunk']['directory']
   action :run
 end
-
-#Configure Splunk to start on boot w/ systemd
-systemd_unit 'splunk.service' do
-  content <<-EOU.gsub(/^\s+/, '')
-  [Unit]
-  Description=Splunk Universal Forwarder
-
-  [Service]
-  Type=forking
-  RemainAfterExit=True
-  User=#{node['splunk']['user']}
-  ExecStart=#{node['splunk']['directory']}/splunkforwarder/bin/splunk start --accept-license --answer-yes --no-prompt
-  ExecStop=#{node['splunk']['directory']}/splunkforwarder/bin/splunk stop
-  ExecReload=#{node['splunk']['directory']}/splunkforwarder/bin/splunk restart
-
-  [Install]
-  WantedBy=multi-user.target
-  EOU
-  action [ :create, :enable, :start ]
-end
