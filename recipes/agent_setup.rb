@@ -32,17 +32,30 @@ template "#{node['splunk']['directory']}/splunkforwarder/etc/system/local/deploy
   mode '0750'
 end
 
-#Configure Splunk to launch with FIPS, service account, and ignore SELinux
-template "#{node['splunk']['directory']}/splunkforwarder/etc/splunk-launch.conf" do
-  source 'splunk-launch.conf.erb'
-  owner "#{node['splunk']['user']}"
-  group "#{node['splunk']['group']}"
-  mode '0750'
+##Configure Splunk to launch with FIPS, service account, and ignore SELinux
+#template "#{node['splunk']['directory']}/splunkforwarder/etc/splunk-launch.conf" do
+#  source 'splunk-launch.conf.erb'
+#  owner "#{node['splunk']['user']}"
+#  group "#{node['splunk']['group']}"
+#  mode '0750'
+#end
+############################START TEST CODE##########################
+execute 'ulimit_paramUser' do
+  command 'ulimit -Ha >> /tmp/ulimit_pram.txt'
+  user "#{node['splunk']['user']}"
+  action :run
 end
+
+execute 'ulimit_suUser' do
+  command "su - #{node['splunk']['user']} -c 'ulimit -Ha >> /tmp/ulimit_su.txt'"
+  action :run
+end
+##########################END TEST CODE#########################
 
 #Initizlize Splunk
 execute 'SplunkStart' do
-  command 'splunkforwarder/bin/splunk start --accept-license'
+  command '/agents/splunkforwarder/bin/splunk start --accept-license'
+  #command "su - #{node['splunk']['user']} -c '/agents/splunkforwarder/bin/splunk start --accept-license'"
   cwd node['splunk']['directory']
   user "#{node['splunk']['user']}"
   notifies :delete, "remote_file[#{node['splunk']['directory']}/#{node['splunk']['installable']}]", :immediate
