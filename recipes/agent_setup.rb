@@ -40,25 +40,22 @@ template "#{node['splunk']['directory']}/splunkforwarder/etc/splunk-launch.conf"
   mode '0750'
 end
 
-##Initizlize Splunk
-#execute 'SplunkStart' do
-#  command 'splunkforwarder/bin/splunk start --accept-license'
-#  cwd node['splunk']['directory']
-#  user "#{node['splunk']['user']}"
-#  notifies :delete, "remote_file[#{node['splunk']['directory']}/#{node['splunk']['installable']}]", :immediate
-#  action :run
-#end
-
 #Configure Splunk to start on boot w/ systemd
 systemd_unit 'splunk.service' do
   content <<-EOU.gsub(/^\s+/, '')
   [Unit]
-  Description=Splunk Universal Forwarder
-
+  Description=Splunk Universal Forwarder service
+  Documentation=
+  After=network.target
+  Wants=network.target
+  
   [Service]
   Type=forking
-  RemainAfterExit=True
+  RemainAfterExit=no
+  Restart=always
+  RestartSec=30s
   User=#{node['splunk']['user']}
+  Group=#{node['splunk']['group']}
   ExecStart=#{node['splunk']['directory']}/splunkforwarder/bin/splunk start --accept-license --answer-yes --no-prompt
   ExecStop=#{node['splunk']['directory']}/splunkforwarder/bin/splunk stop
   ExecReload=#{node['splunk']['directory']}/splunkforwarder/bin/splunk restart
