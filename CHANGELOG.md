@@ -6,3 +6,5 @@ v0.6.0
   -Leverage "limits" cookbook instead of custom ulimit configurations
 v0.7.0
   -Configure Splunk as systmed service
+v0.7.1
+  -Fix missing systemd lines after merge conflict

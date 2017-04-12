@@ -59,3 +59,9 @@ systemd_unit 'splunk.service' do
   ExecStart=#{node['splunk']['directory']}/splunkforwarder/bin/splunk start --accept-license --answer-yes --no-prompt
   ExecStop=#{node['splunk']['directory']}/splunkforwarder/bin/splunk stop
   ExecReload=#{node['splunk']['directory']}/splunkforwarder/bin/splunk restart
+
+  [Install]
+  WantedBy=multi-user.target
+  EOU
+  action [ :create, :enable, :start ]
+end
