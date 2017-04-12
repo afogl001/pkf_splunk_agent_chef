@@ -45,7 +45,6 @@ systemd_unit 'splunk.service' do
   content <<-EOU.gsub(/^\s+/, '')
   [Unit]
   Description=Splunk Universal Forwarder service
-  Documentation=
   After=network.target
   Wants=network.target
 
