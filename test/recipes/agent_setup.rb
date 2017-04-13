@@ -23,7 +23,7 @@ describe file '/agents/splunkforwarder_6-5-2.tgz' do
   it { should_not exist }
 end
 
-#Verify Splunk is enabled
-describe file '/etc/init.d/splunk' do
-  it { should exist }
+#Verify Splunk is enabled in systemd
+describe command ('systemctl is-enabled splunk') do
+  its ('stdout') { should eq "enabled\n" }
 end

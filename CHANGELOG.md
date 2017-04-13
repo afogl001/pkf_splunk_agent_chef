@@ -12,3 +12,5 @@ v0.7.2
   -Removed empty "Description" option in systemd declaration
 v0.8.0
   -Use "limits" recipe instead of setting them manually
+v0.8.1
+  -Update tests for systemd instead of init.d
