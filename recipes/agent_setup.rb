@@ -32,39 +32,35 @@ template "#{node['splunk']['directory']}/splunkforwarder/etc/system/local/deploy
   mode '0750'
 end
 
-##Configure Splunk to launch with FIPS, service account, and ignore SELinux
-#template "#{node['splunk']['directory']}/splunkforwarder/etc/splunk-launch.conf" do
-#  source 'splunk-launch.conf.erb'
-#  owner "#{node['splunk']['user']}"
-#  group "#{node['splunk']['group']}"
-#  mode '0750'
-#end
-############################START TEST CODE##########################
-execute 'ulimit_paramUser' do
-  command 'ulimit -Ha >> /tmp/ulimit_pram.txt'
-  user "#{node['splunk']['user']}"
-  action :run
+#Configure Splunk to launch with FIPS, service account, and ignore SELinux
+template "#{node['splunk']['directory']}/splunkforwarder/etc/splunk-launch.conf" do
+  source 'splunk-launch.conf.erb'
+  owner "#{node['splunk']['user']}"
+  group "#{node['splunk']['group']}"
+  mode '0750'
 end
 
-execute 'ulimit_suUser' do
-  command "su - #{node['splunk']['user']} -c 'ulimit -Ha >> /tmp/ulimit_su.txt'"
-  action :run
-end
-##########################END TEST CODE#########################
+#Configure Splunk to start on boot w/ systemd
+systemd_unit 'splunk.service' do
+  content <<-EOU.gsub(/^\s+/, '')
+  [Unit]
+  Description=Splunk Universal Forwarder service
+  After=network.target
+  Wants=network.target
 
-#Initizlize Splunk
-execute 'SplunkStart' do
-  command '/agents/splunkforwarder/bin/splunk start --accept-license'
-  #command "su - #{node['splunk']['user']} -c '/agents/splunkforwarder/bin/splunk start --accept-license'"
-  cwd node['splunk']['directory']
-  user "#{node['splunk']['user']}"
-  notifies :delete, "remote_file[#{node['splunk']['directory']}/#{node['splunk']['installable']}]", :immediate
-  action :run
-end
+  [Service]
+  Type=forking
+  RemainAfterExit=no
+  Restart=always
+  RestartSec=30s
+  User=#{node['splunk']['user']}
+  Group=#{node['splunk']['group']}
+  ExecStart=#{node['splunk']['directory']}/splunkforwarder/bin/splunk start --accept-license --answer-yes --no-prompt
+  ExecStop=#{node['splunk']['directory']}/splunkforwarder/bin/splunk stop
+  ExecReload=#{node['splunk']['directory']}/splunkforwarder/bin/splunk restart
 
-#Configure Splunk to start on boot
-execute 'SplunkBoot' do
-  command 'splunkforwarder/bin/splunk enable boot-start'
-  cwd node['splunk']['directory']
-  action :run
+  [Install]
+  WantedBy=multi-user.target
+  EOU
+  action [ :create, :enable, :start ]
 end

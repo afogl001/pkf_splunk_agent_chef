@@ -4,7 +4,7 @@ maintainer_email 'aafogles@members.fsf.org'
 license 'GPLv3'
 description 'Installs/Configures Splunk Universal Forwarder'
 long_description 'Installs/Configures Splunk Universal Forwarder'
-version '0.6.0'
+version '0.7.2'
 
 depends 'limits', '~> 1.0'
 # If you upload to Supermarket you should set this so your cookbook
